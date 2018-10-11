@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity
                 mMap = mapboxMap;
             }
         });
-        //mapView.setStyleUrl("https://lznorth-test.maplytic.no/style/style-v2.json");
     }
 
     @Override
