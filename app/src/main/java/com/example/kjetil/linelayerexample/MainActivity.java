@@ -62,23 +62,7 @@ public class MainActivity extends AppCompatActivity
 
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
-        testButton = findViewById(R.id.btn_test);
-        testButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("TEST", "onMapReady: setting style url..");
-                //try to remove layer also.. so i can re-add.
-                //mMap.removeLayer("linelayer");
 
-                mMap.setStyleUrl("https://www.mapbox.com/android-docs/files/mapbox-raster-v8.json");
-
-                //LineLayer lineLayer = getLineLayer(mMap);
-                //mMap.addLayer(lineLayer);
-                for (Layer layer : mMap.getLayers()) {
-                    Log.i("Layer", layer.getId() + " " + layer.getVisibility().toString());
-                }
-            }
-        });
 
         // Create a list to store our line coordinates.
         routeCoordinates = new ArrayList<Point>();
@@ -96,6 +80,19 @@ public class MainActivity extends AppCompatActivity
 
                 mapboxMap.addLayer(lineLayer);
                 mMap = mapboxMap;
+            }
+        });
+        testButton = findViewById(R.id.btn_test);
+        testButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("TEST", "onMapReady: setting style url..");
+
+                mMap.setStyleUrl("https://www.mapbox.com/android-docs/files/mapbox-raster-v8.json");
+
+                for (Layer layer : mMap.getLayers()) {
+                    Log.i("Layer", layer.getId() + " " + layer.getVisibility().toString());
+                }
             }
         });
     }
