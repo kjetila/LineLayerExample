@@ -67,7 +67,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Log.d("TEST", "onMapReady: setting style url..");
+                //try to remove layer also.. so i can re-add.
+                //mMap.removeLayer("linelayer");
+
                 mMap.setStyleUrl("https://www.mapbox.com/android-docs/files/mapbox-raster-v8.json");
+
+                //LineLayer lineLayer = getLineLayer(mMap);
+                //mMap.addLayer(lineLayer);
                 for (Layer layer : mMap.getLayers()) {
                     Log.i("Layer", layer.getId() + " " + layer.getVisibility().toString());
                 }
@@ -84,27 +90,9 @@ public class MainActivity extends AppCompatActivity
         mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(MapboxMap mapboxMap) {
-                //mapboxMap.setStyleUrl();
                 // Create the LineString from the list of coordinates and then make a GeoJSON
                 // FeatureCollection so we can add the line to our map as a layer.
-                LineString lineString = LineString.fromLngLats(routeCoordinates);
-
-                FeatureCollection featureCollection =
-                        FeatureCollection.fromFeatures(new Feature[]{Feature.fromGeometry(lineString)});
-
-                Source geoJsonSource = new GeoJsonSource("line-source", featureCollection);
-
-                mapboxMap.addSource(geoJsonSource);
-                LineLayer lineLayer = new LineLayer("linelayer", "line-source");
-
-                // The layer properties for our line. This is where we make the line dotted, set the
-                // color, etc.
-                lineLayer.setProperties(
-                        PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
-                        PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
-                        PropertyFactory.lineWidth(8f),
-                        PropertyFactory.lineColor(Color.parseColor("#e55e5e"))
-                );
+                LineLayer lineLayer = getLineLayer(mapboxMap);
 
                 mapboxMap.addLayer(lineLayer);
                 mMap = mapboxMap;
@@ -152,5 +140,30 @@ public class MainActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
+    }
+
+    private LineLayer getLineLayer(MapboxMap mapboxMap) {
+        LineString lineString = LineString.fromLngLats(routeCoordinates);
+
+        FeatureCollection featureCollection =
+                FeatureCollection.fromFeatures(new Feature[]{Feature.fromGeometry(lineString)});
+        GeoJsonSource source = mapboxMap.getSourceAs("line-source");
+        if (source != null) {
+            source.setGeoJson(featureCollection);
+        } else {
+            source = new GeoJsonSource("line-source", featureCollection);
+            mapboxMap.addSource(source);
+        }
+        LineLayer lineLayer = new LineLayer("linelayer", "line-source");
+
+        // The layer properties for our line. This is where we make the line dotted, set the
+        // color, etc.
+        lineLayer.setProperties(
+                PropertyFactory.lineCap(Property.LINE_CAP_ROUND),
+                PropertyFactory.lineJoin(Property.LINE_JOIN_ROUND),
+                PropertyFactory.lineWidth(8f),
+                PropertyFactory.lineColor(Color.parseColor("#e55e5e"))
+        );
+        return lineLayer;
     }
 }
